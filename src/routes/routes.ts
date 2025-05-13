@@ -1,7 +1,7 @@
 import { Router } from "express";
-import SessionRoutes from "./SessionRoutes"; // Import session-related routes
+import { checkDatabaseHealth, JsonResponseToText } from "../utils/db-health";
 import PayloadRoutes from "./PayloadRoutes"; // Import payload-related routes
-import { checkDatabaseHealth } from "../utils/db-health";
+import SessionRoutes from "./SessionRoutes"; // Import session-related routes
 const router = Router();
 
 // Mount session and payload related routes
@@ -11,12 +11,8 @@ router.use("/payload", PayloadRoutes);
 router.get("/health", async (req, res) => {
   try {
     const dbHealth = await checkDatabaseHealth();
-
-    res.status(200).send({
-      service: process.env.DB_USERNAME || "Database Service",
-      database: dbHealth,
-      timestamp: new Date().toISOString(),
-    });
+    const textResponse = JsonResponseToText(dbHealth);
+    res.status(200).send(textResponse);
   } catch (error) {
     console.error("Health check failed:", error);
     res.status(500).send({

@@ -12,6 +12,7 @@ router.get("/health", async (req, res) => {
   try {
     const dbHealth = await checkDatabaseHealth();
     const textResponse = JsonResponseToText(dbHealth);
+    res.setHeader("Content-Type", "text/plain");
     res.status(200).send(textResponse);
   } catch (error) {
     console.error("Health check failed:", error);
